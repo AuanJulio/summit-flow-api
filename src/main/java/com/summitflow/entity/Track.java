@@ -3,7 +3,7 @@ package com.summitflow.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

@@ -1,6 +1,9 @@
 package com.summitflow.controller;
 
+import com.summitflow.controller.request.TrackRequest;
+import com.summitflow.controller.response.TrackResponse;
 import com.summitflow.entity.Track;
+import com.summitflow.mapper.TrackMapper;
 import com.summitflow.service.TrackService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,28 +20,31 @@ public class TrackController {
     private final TrackService trackService;
 
     @GetMapping
-    public ResponseEntity<List<Track>> getAll(){
-        List<Track> tracks = trackService.findAll();
+    public ResponseEntity<List<TrackResponse>> getAll(){
+        List<TrackResponse> tracks = trackService.findAll().stream()
+                .map(track -> TrackMapper.toResponse(track))
+                .toList();
+
         return ResponseEntity.ok().body(tracks);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Track> getById(@PathVariable Long id){
+    public ResponseEntity<TrackResponse> getById(@PathVariable Long id){
         return trackService.findById(id)
-                .map(track -> ResponseEntity.ok(track))
+                .map(track -> ResponseEntity.ok(TrackMapper.toResponse(track)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Track> save(@RequestBody Track track){
-        Track savedTrack = trackService.save(track);
-        return ResponseEntity.ok(savedTrack);
+    public ResponseEntity<TrackResponse> save(@RequestBody TrackRequest request){
+        Track savedTrack = trackService.save(TrackMapper.toTrack(request));
+        return ResponseEntity.ok(TrackMapper.toResponse(savedTrack));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Track> update(@PathVariable Long id, @RequestBody Track track){
-        return trackService.update(id, track)
-                .map(t -> ResponseEntity.ok(t))
+    public ResponseEntity<TrackResponse> update(@PathVariable Long id, @RequestBody TrackRequest request){
+        return trackService.update(id, TrackMapper.toTrack(request))
+                .map(t -> ResponseEntity.ok(TrackMapper.toResponse(t)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
