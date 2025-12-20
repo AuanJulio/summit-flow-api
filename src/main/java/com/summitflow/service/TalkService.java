@@ -57,6 +57,10 @@ public class TalkService {
         talkRepository.deleteById(id);
     }
 
+    public List<Talk> findByTracks(List<Long> trackIds){
+        return talkRepository.findByTracksQuery(trackIds);
+    }
+
     private List<Speaker> findSpeakers(List<Speaker> speakers){
         List<Speaker> foundSpeakers = new ArrayList<>();
         speakers.forEach(speaker -> {

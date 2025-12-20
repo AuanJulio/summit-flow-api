@@ -59,4 +59,14 @@ public class TalkController {
         return ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<TalkResponse>> findByTracks(@RequestParam List<Long> trackIds){
+        List<TalkResponse> tracks = talkService.findByTracks(trackIds)
+                .stream()
+                .map(track -> TalkMapper.toResponse(track))
+                .toList();
+
+        return ResponseEntity.ok(tracks);
+    }
+
 }
