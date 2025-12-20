@@ -16,7 +16,7 @@ public class TalkMapper {
 
     public static Talk toTalk(TalkRequest talkRequest){
 
-        List<Speaker> speakers = talkRequest.speaker()
+        List<Speaker> speakers = talkRequest.speakers()
                 .stream()
                 .map(speakerId -> Speaker.builder().id(speakerId).build())
                 .toList();
