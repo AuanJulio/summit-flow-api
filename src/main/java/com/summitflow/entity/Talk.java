@@ -22,7 +22,7 @@ public class Talk {
     @Column(nullable = false)
     private String title;
 
-    private String description;
+    private String summary;
 
     @Column(name = "start_time")
     private LocalDateTime startTime;
