@@ -14,3 +14,7 @@ spring:
 
   flyway:
     enabled: true
+
+summit-flow:
+  jwt:
+    secret: ${JWT_SECRET}
