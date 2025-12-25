@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface TalkRepository extends JpaRepository<Talk, Long> {
 
-    @Query("SELECT t FROM Talk t JOIN t.tracks tr WHERE tr.id IN ?1")
+    @Query("SELECT DISTINCT t FROM Talk t JOIN t.tracks tr WHERE tr.id IN ?1")
     List<Talk> findByTracksQuery(List<Long> tracks);
 
 }
