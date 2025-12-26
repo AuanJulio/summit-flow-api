@@ -3,6 +3,7 @@ package com.summitflow.controller;
 import com.summitflow.controller.request.SpeakerRequest;
 import com.summitflow.controller.response.SpeakerResponse;
 import com.summitflow.entity.Speaker;
+import com.summitflow.exception.ResourceNotFoundException;
 import com.summitflow.mapper.SpeakerMapper;
 import com.summitflow.service.SpeakerService;
 import lombok.RequiredArgsConstructor;
@@ -39,14 +40,14 @@ public class SpeakerController {
     public ResponseEntity<SpeakerResponse> getById(@PathVariable Long id){
         return speakerService.findById(id)
                 .map(speaker -> ResponseEntity.ok(SpeakerMapper.toResponse(speaker)))
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Speaker not found"));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<SpeakerResponse> update(@PathVariable Long id, @RequestBody SpeakerRequest request){
         return speakerService.update(id, SpeakerMapper.toSpeaker(request))
                 .map(speaker -> ResponseEntity.ok(SpeakerMapper.toResponse(speaker)))
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Speaker not found"));
     }
 
     @DeleteMapping("/{id}")
@@ -55,8 +56,9 @@ public class SpeakerController {
         if (speaker.isPresent()){
             speakerService.deleteById(id);
             return ResponseEntity.noContent().build();
+        } else {
+            throw new ResourceNotFoundException("Speaker not found");
         }
-        return ResponseEntity.notFound().build();
     }
 
 }

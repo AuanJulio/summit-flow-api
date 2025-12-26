@@ -3,6 +3,7 @@ package com.summitflow.controller;
 import com.summitflow.controller.request.TrackRequest;
 import com.summitflow.controller.response.TrackResponse;
 import com.summitflow.entity.Track;
+import com.summitflow.exception.ResourceNotFoundException;
 import com.summitflow.mapper.TrackMapper;
 import com.summitflow.service.TrackService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class TrackController {
     public ResponseEntity<TrackResponse> getById(@PathVariable Long id){
         return trackService.findById(id)
                 .map(track -> ResponseEntity.ok(TrackMapper.toResponse(track)))
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Track not found"));
     }
 
     @PostMapping
@@ -45,7 +46,7 @@ public class TrackController {
     public ResponseEntity<TrackResponse> update(@PathVariable Long id, @RequestBody TrackRequest request){
         return trackService.update(id, TrackMapper.toTrack(request))
                 .map(t -> ResponseEntity.ok(TrackMapper.toResponse(t)))
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Track not found"));
     }
 
     @DeleteMapping("/{id}")
@@ -54,8 +55,9 @@ public class TrackController {
         if (track.isPresent()){
             trackService.deleteById(id);
             return ResponseEntity.noContent().build();
+        } else {
+            throw new ResourceNotFoundException("Track not found");
         }
-        return ResponseEntity.notFound().build();
     }
 
 }
