@@ -6,6 +6,7 @@ import com.summitflow.entity.Talk;
 import com.summitflow.exception.ResourceNotFoundException;
 import com.summitflow.mapper.TalkMapper;
 import com.summitflow.service.TalkService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class TalkController {
     }
 
     @PostMapping
-    public ResponseEntity<TalkResponse> save(@RequestBody TalkRequest request){
+    public ResponseEntity<TalkResponse> save(@Valid @RequestBody TalkRequest request){
         Talk savedTalk = talkService.save(TalkMapper.toTalk(request));
         return ResponseEntity.ok(TalkMapper.toResponse(savedTalk));
     }
@@ -44,7 +45,7 @@ public class TalkController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TalkResponse> update(@PathVariable Long id, @RequestBody TalkRequest request){
+    public ResponseEntity<TalkResponse> update(@PathVariable Long id, @Valid @RequestBody TalkRequest request){
         return talkService.update(id, TalkMapper.toTalk(request))
                 .map(talk -> ResponseEntity.ok(TalkMapper.toResponse(talk)))
                 .orElseThrow(() -> new ResourceNotFoundException("Talk not found"));
