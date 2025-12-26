@@ -3,6 +3,7 @@ package com.summitflow.controller;
 import com.summitflow.controller.request.TalkRequest;
 import com.summitflow.controller.response.TalkResponse;
 import com.summitflow.entity.Talk;
+import com.summitflow.exception.ResourceNotFoundException;
 import com.summitflow.mapper.TalkMapper;
 import com.summitflow.service.TalkService;
 import lombok.RequiredArgsConstructor;
@@ -39,14 +40,14 @@ public class TalkController {
     public ResponseEntity<TalkResponse> findById(@PathVariable Long id){
         return talkService.findById(id)
                 .map(talk -> ResponseEntity.ok(TalkMapper.toResponse(talk)))
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Talk not found"));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<TalkResponse> update(@PathVariable Long id, @RequestBody TalkRequest request){
         return talkService.update(id, TalkMapper.toTalk(request))
                 .map(talk -> ResponseEntity.ok(TalkMapper.toResponse(talk)))
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Talk not found"));
     }
 
     @DeleteMapping("/{id}")
@@ -55,8 +56,9 @@ public class TalkController {
         if (talk.isPresent()){
             talkService.deleteById(id);
             return ResponseEntity.noContent().build();
+        } else {
+            throw new ResourceNotFoundException("Talk not found");
         }
-        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/search")
