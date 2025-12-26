@@ -6,6 +6,7 @@ import com.summitflow.controller.request.UserRequest;
 import com.summitflow.controller.response.LoginResponse;
 import com.summitflow.controller.response.UserResponse;
 import com.summitflow.entity.User;
+import com.summitflow.exception.UsernameOrPasswordInvalidException;
 import com.summitflow.mapper.UserMapper;
 import com.summitflow.service.UserService;
 import jakarta.validation.Valid;
@@ -48,7 +49,7 @@ public class AuthController {
 
             return ResponseEntity.ok(new LoginResponse(token));
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            throw new UsernameOrPasswordInvalidException("Invalid username or password");
         }
     }
 }

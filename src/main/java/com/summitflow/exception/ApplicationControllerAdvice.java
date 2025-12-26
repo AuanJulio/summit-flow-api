@@ -43,4 +43,16 @@ public class ApplicationControllerAdvice {
                 .build();
     }
 
+    @ExceptionHandler(UsernameOrPasswordInvalidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public StandardError handleUsernameOrPasswordInvalid(UsernameOrPasswordInvalidException e, HttpServletRequest request){
+        return StandardError.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .build();
+    }
+
 }
