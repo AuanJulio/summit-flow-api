@@ -6,6 +6,7 @@ import com.summitflow.entity.Track;
 import com.summitflow.exception.ResourceNotFoundException;
 import com.summitflow.mapper.TrackMapper;
 import com.summitflow.service.TrackService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,13 +38,13 @@ public class TrackController {
     }
 
     @PostMapping
-    public ResponseEntity<TrackResponse> save(@RequestBody TrackRequest request){
+    public ResponseEntity<TrackResponse> save(@Valid @RequestBody TrackRequest request){
         Track savedTrack = trackService.save(TrackMapper.toTrack(request));
         return ResponseEntity.ok(TrackMapper.toResponse(savedTrack));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TrackResponse> update(@PathVariable Long id, @RequestBody TrackRequest request){
+    public ResponseEntity<TrackResponse> update(@PathVariable Long id, @Valid @RequestBody TrackRequest request){
         return trackService.update(id, TrackMapper.toTrack(request))
                 .map(t -> ResponseEntity.ok(TrackMapper.toResponse(t)))
                 .orElseThrow(() -> new ResourceNotFoundException("Track not found"));

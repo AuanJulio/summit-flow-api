@@ -6,6 +6,7 @@ import com.summitflow.entity.Speaker;
 import com.summitflow.exception.ResourceNotFoundException;
 import com.summitflow.mapper.SpeakerMapper;
 import com.summitflow.service.SpeakerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class SpeakerController {
     }
 
     @PostMapping
-    public ResponseEntity<SpeakerResponse> save(@RequestBody SpeakerRequest request){
+    public ResponseEntity<SpeakerResponse> save(@Valid @RequestBody SpeakerRequest request){
         Speaker savedSpeaker = speakerService.save(SpeakerMapper.toSpeaker(request));
         return ResponseEntity.ok(SpeakerMapper.toResponse(savedSpeaker));
     }
@@ -44,7 +45,7 @@ public class SpeakerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SpeakerResponse> update(@PathVariable Long id, @RequestBody SpeakerRequest request){
+    public ResponseEntity<SpeakerResponse> update(@PathVariable Long id, @Valid @RequestBody SpeakerRequest request){
         return speakerService.update(id, SpeakerMapper.toSpeaker(request))
                 .map(speaker -> ResponseEntity.ok(SpeakerMapper.toResponse(speaker)))
                 .orElseThrow(() -> new ResourceNotFoundException("Speaker not found"));
