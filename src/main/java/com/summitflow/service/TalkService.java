@@ -3,6 +3,7 @@ package com.summitflow.service;
 import com.summitflow.entity.Speaker;
 import com.summitflow.entity.Talk;
 import com.summitflow.entity.Track;
+import com.summitflow.exception.ResourceNotFoundException;
 import com.summitflow.repository.TalkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,9 @@ public class TalkService {
     private List<Speaker> findSpeakers(List<Speaker> speakers){
         List<Speaker> foundSpeakers = new ArrayList<>();
         speakers.forEach(speaker -> {
-            speakerService.findById(speaker.getId()).ifPresent(foundSpeakers::add);
+            Speaker speakerFound = speakerService.findById(speaker.getId())
+                            .orElseThrow(() -> new ResourceNotFoundException("Speaker with id" + speaker.getId() + " not found"));
+            foundSpeakers.add(speakerFound);
         });
         return foundSpeakers;
     }
@@ -72,7 +75,9 @@ public class TalkService {
     private List<Track> findTracks(List<Track> tracks){
         List<Track> foundTracks = new ArrayList<>();
         tracks.forEach(track -> {
-            trackService.findById(track.getId()).ifPresent(foundTracks::add);
+            Track trackFound = trackService.findById(track.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Track with id" + track.getId() + " not found"));
+            foundTracks.add(trackFound);
         });
         return foundTracks;
     }
