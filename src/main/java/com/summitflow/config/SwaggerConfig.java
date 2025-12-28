@@ -19,8 +19,7 @@ import org.springframework.context.annotation.Configuration;
                         email = "auanjulio13@gmail.com",
                         url = "https://github.com/AuanJulio"
                 )
-        ),
-        security = @SecurityRequirement(name = "bearerAuth")
+        )
 )
 @SecurityScheme(
         name = "bearerAuth",
