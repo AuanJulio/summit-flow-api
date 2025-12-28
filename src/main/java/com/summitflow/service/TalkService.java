@@ -4,19 +4,22 @@ import com.summitflow.entity.Speaker;
 import com.summitflow.entity.Talk;
 import com.summitflow.entity.Track;
 import com.summitflow.exception.ResourceNotFoundException;
+import com.summitflow.repository.SpeakerRepository;
 import com.summitflow.repository.TalkRepository;
+import com.summitflow.repository.TrackRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TalkService {
 
     private final TalkRepository talkRepository;
+    private final SpeakerRepository speakerRepository;
+    private final TrackRepository trackRepository;
     private final SpeakerService speakerService;
     private final TrackService trackService;
 
@@ -25,8 +28,8 @@ public class TalkService {
     }
 
     public Talk save(Talk talk){
-        talk.setSpeakers(this.findSpeakers(talk.getSpeakers()));
-        talk.setTracks(this.findTracks(talk.getTracks()));
+        talk.setSpeakers(new HashSet<>(this.findSpeakers(talk.getSpeakers())));
+        talk.setTracks(new HashSet<>(this.findTracks(talk.getTracks())));
         return talkRepository.save(talk);
     }
 
@@ -62,23 +65,55 @@ public class TalkService {
         return talkRepository.findByTracksQuery(trackIds);
     }
 
-    private List<Speaker> findSpeakers(List<Speaker> speakers){
-        List<Speaker> foundSpeakers = new ArrayList<>();
-        speakers.forEach(speaker -> {
-            Speaker speakerFound = speakerService.findById(speaker.getId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Speaker with id" + speaker.getId() + " not found"));
-            foundSpeakers.add(speakerFound);
-        });
+    private List<Speaker> findSpeakers(Set<Speaker> speakers){
+        if (speakers == null || speakers.isEmpty()) {
+            return List.of();
+        }
+
+        Set<Long> speakerIds = speakers.stream()
+                .map(speaker -> speaker.getId())
+                .collect(Collectors.toSet());
+
+        List<Speaker> foundSpeakers = speakerRepository.findAllById(speakerIds);
+
+        Set<Long> foundIds = foundSpeakers.stream()
+                .map(speaker -> speaker.getId())
+                .collect(Collectors.toSet());
+
+        Set<Long> missingIds = speakerIds.stream()
+                .filter(id -> !foundIds.contains(id))
+                .collect(Collectors.toSet());
+
+        if (!missingIds.isEmpty()) {
+            throw new ResourceNotFoundException("Speakers with ids " + missingIds + " not found");
+        }
+
         return foundSpeakers;
     }
 
-    private List<Track> findTracks(List<Track> tracks){
-        List<Track> foundTracks = new ArrayList<>();
-        tracks.forEach(track -> {
-            Track trackFound = trackService.findById(track.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Track with id" + track.getId() + " not found"));
-            foundTracks.add(trackFound);
-        });
+    private List<Track> findTracks(Set<Track> tracks){
+        if (tracks == null || tracks.isEmpty()) {
+            return List.of();
+        }
+
+        Set<Long> trackIds = tracks.stream()
+                .map(Track::getId)
+                .collect(Collectors.toSet());
+
+        List<Track> foundTracks = trackRepository.findAllById(trackIds);
+
+        Set<Long> foundIds = foundTracks.stream()
+                .map(Track::getId)
+                .collect(Collectors.toSet());
+
+        Set<Long> missingId = trackIds.stream()
+                .filter(id -> !foundIds.contains(id))
+                .collect(Collectors.toSet());
+
+        if (!missingId.isEmpty()) {
+            throw new ResourceNotFoundException("Track with id " + missingId + " not found");
+        }
+
         return foundTracks;
     }
 

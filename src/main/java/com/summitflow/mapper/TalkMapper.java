@@ -10,21 +10,23 @@ import com.summitflow.entity.Track;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class TalkMapper {
 
     public static Talk toTalk(TalkRequest talkRequest){
 
-        List<Speaker> speakers = talkRequest.speakers()
+        Set<Speaker> speakers = talkRequest.speakers()
                 .stream()
                 .map(speakerId -> Speaker.builder().id(speakerId).build())
-                .toList();
+                .collect(Collectors.toSet());
 
-        List<Track> tracks = talkRequest.tracks()
+        Set<Track> tracks = talkRequest.tracks()
                 .stream()
                 .map(trackId -> Track.builder().id(trackId).build())
-                .toList();
+                .collect(Collectors.toSet());
 
         return Talk.builder()
                 .title(talkRequest.title())

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Builder
 @AllArgsConstructor
@@ -35,13 +35,13 @@ public class Talk {
             joinColumns = @JoinColumn(name = "talk_id"),
             inverseJoinColumns = @JoinColumn(name = "speaker_id")
     )
-    private List<Speaker> speakers;
+    private Set<Speaker> speakers;
 
     @ManyToMany
     @JoinTable(name = "tb_talk_track",
             joinColumns = @JoinColumn(name = "talk_id"),
             inverseJoinColumns = @JoinColumn(name = "track_id")
     )
-    private List<Track> tracks;
+    private Set<Track> tracks;
 
 }
